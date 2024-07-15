@@ -20,7 +20,7 @@ const registerUser = asyncHandler( async (req, res) =>{
   //1. Get user details from frontend - Postman req.body
   const {email,password, fullName, username} = req.body
   console.log("email: ",email)
- })
+ 
 
   //2. Validation on fiels - Not empty
   if (
@@ -31,7 +31,7 @@ const registerUser = asyncHandler( async (req, res) =>{
   }
 
   //3. Check if user already exists with - Username and email
-  const existedUser = User.findOne({
+  const existedUser = await User.findOne({
     $or:[{ username },{ email }]
   })
 
@@ -41,8 +41,15 @@ const registerUser = asyncHandler( async (req, res) =>{
 
 
   //4. Check for images, check for avatar(required field)
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path
+  let avatarLocalPath;
+  if(req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0){
+    avatarLocalPath = req.files.avatar[0].path
+  }
+  
+  let coverImageLocalPath;
+  if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+    coverImageLocalPath = req.files.coverImage[0].path
+  }
 
   if(!avatarLocalPath){throw new ApiError(400,"Avatar is required")}
 
@@ -70,11 +77,12 @@ const registerUser = asyncHandler( async (req, res) =>{
 
   //8. Check for user creation
   if(!createdUser){throw new ApiError(500,"Something went wrong while creating User")}
+  console.log(createdUser.coverImage)
 
   //9. Return response res
   return res.status(201).json(
     new ApiResponse(200,createdUser,"User registered Successfully!")
   )
 
-
+})
 export {registerUser}
