@@ -3,7 +3,6 @@ import {ApiError} from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
-import { trusted } from "mongoose"
 
 const generateAccessAndRefreshToken = async (userId) => {
   try {
@@ -114,7 +113,7 @@ const loginUser = asyncHandler( async(req,res) => {
   const {email,username,password} = req.body
 
   //2. Username or email
-  if(!username || !email){
+  if(!username && !email){
     throw new ApiError(400,"Email or username is required")
   }
 

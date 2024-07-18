@@ -1,15 +1,16 @@
-import { User } from "../models/user.model";
-import { ApiError } from "../utils/ApiError";
-import { asyncHandler } from "../utils/asyncHandler";
+import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken"
 
-export const verifyJWT = asyncHandler(async (req,_,next) => {
+export const verifyJWT = asyncHandler(async (req,res,next) => {
   try {
     //Extract the token from cookies (After || section is applied for Mobile application where token is accessed through header)
-    const token = req.cookies?.acceesToken || req.header("Authorization")?.replace("Bearer ","")
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ","")
 
-    if(!token){throw new ApiError(401,"Unauthorized Request")}
+    if(!token){throw new ApiError(401,"Unauthorized Request : Token not found")}
 
+    
     //Verify obtained token
     const decodedToken = jwt.verify(token,process.env.ACCESS_TOKEN_SECRET)
 
@@ -25,8 +26,7 @@ export const verifyJWT = asyncHandler(async (req,_,next) => {
 
     //Forward to next middleware or function
     next()
-
   } catch (error) {
-    throw new ApiError(401,"Invliad Access Token or Request")
+    throw new ApiError(401,"Unauthorized Request")
   }
 })
