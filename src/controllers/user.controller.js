@@ -1,6 +1,7 @@
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import { User } from "../models/user.model.js"
+import { Subscription } from "../models/subscription.model.js"
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
@@ -252,7 +253,7 @@ const changeCurrentPassword = asyncHandler(async (req,res) => {
   }
 
   //Set new password
-  user.password = 
+  user.password = newPassword
   
   //Saved in the database
   await user.save({validateBeforeSave:false})
@@ -348,7 +349,7 @@ const updateUserCoverImage = asyncHandler(async(req,res)=>{
 
 const getUserChannelProfile = asyncHandler(async(req,res)=>{
   const {username} = req.params
-
+  
   if(!username?.trim()){
     throw new ApiError(400,"Username is missing")
   }
@@ -370,7 +371,7 @@ const getUserChannelProfile = asyncHandler(async(req,res)=>{
     },
     {
       $lookup:{
-        fromrom:"subscriptions",
+        from:"subscriptions",
         localField:"_id",
         foreignField:"subscriber",
         as:"subscribedTo"
